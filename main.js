@@ -10,13 +10,17 @@ const __main = () => {
         cloud: 'image/cloud.png',
         player: 'image/player.png',
         sky: 'image/sky.png',
+        enemy0: 'image/enemy0.png',
+        enemy1: 'image/enemy1.png',
+        enemy2: 'image/enemy2.png',
+        enemy3: 'image/enemy3.png',
+        enemy4: 'image/enemy4.png',
+
     }
 
-    var game = new Game(30, images, function(g) {
+    var game = new Game(50, images, function(g) {
         var s = Scene.new(g)
         g.runWithScene(s)
     })
-
-
 }
 __main()

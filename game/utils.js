@@ -13,3 +13,8 @@ const reactIntersects = (a, b) => {
         return false
     }
 }
+
+const randomBetween = (start, end) => {
+    let n = Math.random() * (end - start + 1)
+    return Math.floor(n + start)
+}

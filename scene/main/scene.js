@@ -1,220 +1,158 @@
+const config = {
+    player_speed: 10,
+    cloud_speed: 1,
+    enemy_speed: 5,
+    bullet_speed: 5,
+    fire_cooldown: 9,
+}
+class Bullet extends GameImage{
+    constructor(game) {
+        super(game, 'bullet');
+        this.setup()
+    }
+    setup() {
+        // 放在这里可以动态实时的改变子弹的速度
+        this.speed = config.bullet_speed
+    }
+    update() {
+        this.y -= this.speed
+    }
+}
+
+class Player extends GameImage {
+    constructor(game) {
+        super(game, 'player');
+        this.setup()
+    }
+    setup() {
+        this.speed = 10
+        this.cooldown = 0
+    }
+    update() {
+        this.speed = config.player_speed
+        if (this.cooldown > 0) {
+            this.cooldown--
+        }
+    }
+    fire() {
+        if (this.cooldown === 0) {
+            this.cooldown = config.fire_cooldown
+            var b = new Bullet(this.game)
+            var x = this.x + this.w / 2 - b.w / 2
+            var y = this.y
+            b.x = x
+            b.y = y
+            this.scene.addElement(b)
+        }
+    }
+    moveLeft() {
+        this.x -= this.speed
+    }
+    moveRight() {
+        this.x += this.speed
+    }
+    moveUp() {
+        this.y -= this.speed
+    }
+    moveDown() {
+        this.y += this.speed
+    }
+
+}
+class Cloud extends GameImage {
+    constructor(game) {
+        super(game, 'cloud');
+        this.setup()
+    }
+    setup() {
+        this.speed = 1
+        this.x = randomBetween(0, 400)
+        this.y = -randomBetween(0, 100)
+    }
+    update() {
+        this.speed = config.cloud_speed
+        this.y += this.speed
+        if (this.y > 768) {
+            this.setup()
+        }
+    }
+}
+class Enemy extends GameImage {
+    constructor(game) {
+        let type = randomBetween(0, 4)
+        log('type is', type)
+        let name = 'enemy' + type
+        super(game, name);
+        this.setup()
+    }
+
+    setup() {
+        this.speed = randomBetween(2, 5)
+        this.x = randomBetween(0, 400)
+        this.y = randomBetween(0, 100)
+    }
+
+    update() {
+        this.y += this.speed
+        if (this.y > 768) {
+            this.setup()
+        }
+    }
+}
 
 class Scene extends GameScene {
     constructor(game) {
         super(game);
         this.setup()
+        this.setupInputs()
     }
     setup() {
         var game = this.game
         this.bg = new GameImage(game, 'sky')
-        this.player = new GameImage(game, 'player')
-        this.cloud = new GameImage(game, 'cloud')
+        this.numberOfEnemies = 10
+        this.player = new Player(game)
+        this.cloud = new Cloud(game, 'cloud')
         this.player.x = 180
         this.player.y = 600
-
         this.addElement(this.bg)
-        this.addElement(this.player)
         this.addElement(this.cloud)
+        this.addElement(this.player)
+        this.addEnemies()
     }
-   update() {
-       this.cloud.y += 1
+    addEnemies() {
+        let es = []
+        log('numberOfEnemies is', this.numberOfEnemies)
+        for (let i = 0; i < this.numberOfEnemies; i++) {
+            let e = new Enemy(this.game)
+            es.push(e)
+            this.addElement(e)
+        }
+        this.enemies= es
+    }
+    setupInputs() {
+        let g = this.game
+        let s = this
+        g.registerAction('a', function() {
+            s.player.moveLeft()
+        })
+        g.registerAction('d', function() {
+            s.player.moveRight()
+        })
+        g.registerAction('w', function() {
+            s.player.moveUp()
+        })
+        g.registerAction('s', function() {
+            s.player.moveDown()
+        })
+        g.registerAction('j', function() {
+            s.player.fire()
+        })
+    }
+    update() {
+        super.update()
+        this.cloud.y += 1
+        if (this.cloud.y > 768) {
+            this.cloud.y = -50
+        }
    }
 }
-// const Scene = (game) => {
-//     var s = {
-//         game: game,
-//     }
-//     // 初始化
-//     var paddle = Paddle(game)
-//     var ball = Ball(game)
-//     let select = document.querySelector('#id-select-level')
-//     let index = select.selectedIndex
-//     var Blocks = loadLevel(game, select.options[index].value)
-//     log('选择的关卡', select.options[index].value)
-//     log('在main的scene中的Blocks', Blocks)
-//     // 下面是通过点击添加砖块按钮给画布上生成一个砖块 默认位置是[0, 0]
-//     let addButton = document.querySelector("#id-button-add")
-//     addButton.addEventListener('click', () => {
-//         let b = Block(game, [0, 0])
-//         Blocks.push(b)
-//     })
-//     var score = 0
-//     var pause = false
-//     //当前关卡
-//     var nowLevel = 1
-//     game.registerAction('a', function() {
-//         paddle.moveLeft()
-//     })
-//
-//     game.registerAction('d', function() {
-//         paddle.moveRight()
-//     })
-//
-//     game.registerAction('f', function() {
-//         ball.fire()
-//     })
-//     //暂停的功能
-//     window.addEventListener('keydown', (event) => {
-//         let k = event.key
-//         if (k === 'p') {
-//             pause = !pause
-//         } else if ('123456789'.includes(k)) {
-//             Blocks = loadLevel(game, k)
-//         }
-//     })
-//     // 下面是拖拽小球的功能
-//     var enableDrag = false
-//     game.canvas.addEventListener('mousedown', (event) => {
-//         var x = event.offsetX
-//         var y = event.offsetY
-//         if (ball.hasPonit(x, y)) {
-//             // 设置拖拽状态
-//             enableDrag = true
-//         }
-//     })
-//     game.canvas.addEventListener('mousemove', (event) => {
-//         var x = event.offsetX
-//         var y = event.offsetY
-//         if (enableDrag) {
-//             // 设置拖拽状态
-//             ball.x = x
-//             ball.y = y
-//         }
-//     })
-//     game.canvas.addEventListener('mouseup', (event) => {
-//         var x = event.offsetX
-//         var y = event.offsetY
-//         if (ball.hasPonit(x, y)) {
-//             // 设置拖拽状态
-//             enableDrag = false
-//         }
-//     })
-//     // 下面是拖拽砖块的功能
-//     var enableBlock = false
-//     let editorButton = document.querySelector("#id-button-editor")
-//     let editorDiv = document.querySelector('#id-div-editor')
-//     editorButton.addEventListener('click', () => {
-//         if (enableBlock === false) {
-//             enableBlock = true
-//             editorDiv.innerHTML = '当前编辑状态：开启'
-//         } else if (enableBlock === true) {
-//             enableBlock = false
-//             editorDiv.innerHTML = '当前编辑状态：关闭'
-//         }
-//     })
-//     game.canvas.addEventListener('mousedown', (event) => {
-//         var x = event.offsetX
-//         var y = event.offsetY
-//         for (let i = 0; i < Blocks.length; i++) {
-//             let b = Blocks[i]
-//             if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) {
-//                 b.blockDrag = true
-//             }
-//         }
-//     })
-//     game.canvas.addEventListener('mousemove', (event) => {
-//         var x = event.offsetX
-//         var y = event.offsetY
-//         for (let i = 0; i < Blocks.length; i++) {
-//             let b = Blocks[i]
-//             if (b.blockDrag === true && enableBlock === true) {
-//                 b.x = x
-//                 b.y = y
-//             }
-//         }
-//     })
-//     game.canvas.addEventListener('mouseup', (event) => {
-//         var x = event.offsetX
-//         var y = event.offsetY
-//         for (let i = 0; i < Blocks.length; i++) {
-//             let b = Blocks[i]
-//             if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) {
-//                 b.blockDrag = false
-//             }
-//         }
-//     })
-//     // 下面是删除砖块的功能
-//     var DelBlock = false
-//     let delButton = document.querySelector("#id-button-del")
-//     let delDiv = document.querySelector("#id-div-del")
-//     delButton.addEventListener('click', () => {
-//         if (DelBlock === false) {
-//             DelBlock = true
-//             delDiv.innerHTML = '当前删除状态：开启'
-//         } else {
-//             DelBlock = false
-//             delDiv.innerHTML = '当前删除状态：关闭'
-//         }
-//     })
-//     game.canvas.addEventListener('click', (event) => {
-//         var x = event.offsetX
-//         var y = event.offsetY
-//         for (let i = 0; i < Blocks.length; i++) {
-//             let b = Blocks[i]
-//             if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h && DelBlock === true) {
-//                 log('当前砖块是', b)
-//                 log('Blocks is', Blocks)
-//                 Blocks.splice(i, 1)
-//             }
-//         }
-//     })
-//     s.draw = () => {
-//         // 画背景
-//         game.context.fillStyle = "brown"
-//         game.context.fillRect(0, 0, 400, 300)
-//         game.drawImage(paddle)
-//         game.drawImage(ball)
-//         for (let i = 0; i < Blocks.length; i++) {
-//             let block = Blocks[i]
-//             if (block.alive) {
-//                 game.drawImage(block)
-//             }
-//         }
-//         game.context.fillstyle = '#000000'
-//         game.context.fillText('分数' + score, 10, 200)
-//     }
-//     s.update = () => {
-//         if (pause) {
-//             return
-//         }
-//         ball.move()
-//         //判断游戏结束
-//         if (ball.y > paddle.y) {
-//             // 跳转到游戏结束的场景
-//             var end = new SceneEnd(game)
-//             game.replaceScene(end)
-//             return
-//         }
-//         // 判断板子相撞
-//         if (paddle.pengzhuang(ball)) {
-//             ball.speedY = - ball.speedY
-//         }
-//         // 判断block相撞
-//         for (let i = 0; i < Blocks.length; i++) {
-//             let block = Blocks[i]
-//             if (block.pengzhuang(ball)) {
-//                 console.log('沙雕blcok')
-//                 block.kill()
-//                 score += 100
-//                 ball.speedY = - ball.speedY
-//             }
-//         }
-//         //当前关卡结束后进入下一关
-//         var s = 0
-//         for (let i = 0; i < Blocks.length; i++) {
-//             let block = Blocks[i]
-//             if (block.alive === false) {
-//                 s += 1
-//             }
-//         }
-//         if (s === Blocks.length) {
-//             //三个砖块的alive全是false 才能执行下段的代码
-//             if (nowLevel === Number(3)) {
-//                 nowLevel = Number(0)
-//             }
-//             nowLevel = nowLevel + 1
-//             Blocks = loadLevel(game, nowLevel)
-//         }
-//     }
-//     return s
-// }

@@ -54,18 +54,6 @@ class Game {
         var img = g.images[name]
         return img
     }
-    // imageByName = (name) => {
-    //     let g = this
-    //     log('name is', name)
-    //     log('g.images', g.images[name])
-    //     var img = g.images[name]
-    //     var image = {
-    //         width: img.width,
-    //         height: img.height,
-    //         image: img,
-    //     }
-    //     return image
-    // }
     runWithScene (scene) {
         let g = this
         g.scene = scene
@@ -78,8 +66,6 @@ class Game {
     }
     __start () {
         this.runCallback(this)
-        //timer
-
     }
     init = () => {
         let g = this
