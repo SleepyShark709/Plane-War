@@ -18,8 +18,3 @@ class GameImage {
 
     }
 }
-// class Player extends GameImage{
-//     constructor(game, name) {
-//         super(game, name);
-//     }
-// }

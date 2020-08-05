@@ -15,11 +15,11 @@ const __main = () => {
         enemy2: 'image/enemy2.png',
         enemy3: 'image/enemy3.png',
         enemy4: 'image/enemy4.png',
-
+        fire: 'image/fire.png',
     }
 
     var game = new Game(50, images, function(g) {
-        var s = Scene.new(g)
+        var s = SceneTitle.new(g)
         g.runWithScene(s)
     })
 }

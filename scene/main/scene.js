@@ -1,4 +1,3 @@
-
 class Scene extends GameScene {
     constructor(game) {
         super(game);
@@ -13,7 +12,8 @@ class Scene extends GameScene {
         this.cloud = new Cloud(game, 'cloud')
         this.player.x = 180
         this.player.y = 600
-        this.label = new lifeTime(game, 350, 50, 0)
+        game.context.fillStyle = 'white'
+        this.label = new lifeTime(game, 30, 700, 0)
         this.addElement(this.bg)
         this.addElement(this.cloud)
         this.addElement(this.player)
