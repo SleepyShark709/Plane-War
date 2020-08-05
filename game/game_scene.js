@@ -3,18 +3,26 @@ class GameScene {
         this.game = game
         this.elements = []
         this.enemies= []
+        this.enemiesBullet = []
     }
     static new(game) {
         var i = new this(game)
         return i
     }
+    // 背景 玩家等加入到数组中
     addElement(img) {
         img.scene = this
         this.elements.push(img)
     }
+    // 将敌人加入到数组中
     addEnemiesElement(img) {
         img.scene = this
         this.enemies.push(img)
+    }
+    // 将敌人的子弹加入到数组中
+    addEnemiesBullet(img) {
+        img.scene = this
+        this.enemiesBullet.push(img)
     }
     pengzhuang_scene(img) {
         for (let i = 0; i < this.enemies.length; i++) {
@@ -33,10 +41,15 @@ class GameScene {
                 f.life = 5000
                 this.addElement(f)
                 e.setup()
+                e.fire()
             }
         }
     }
     draw() {
+        // 画了三样东西
+        // 1、背景 玩家等
+        // 2、敌人
+        // 3、敌人的子弹
         for (let i = 0; i < this.elements.length; i++) {
             let e = this.elements[i]
             // this.game.drawImage(e)
@@ -46,14 +59,26 @@ class GameScene {
             let e = this.enemies[i]
             e.draw()
         }
+        for (let i = 0; i < this.enemiesBullet.length; i++) {
+            let e = this.enemiesBullet[i]
+            e.draw()
+        }
     }
     update() {
+        // 更新了三样东西
+        // 1、背景 敌人 玩家等
+        // 2、玩家的子弹
+        // 3、敌人的子弹
         for (let i = 0; i < this.elements.length; i++) {
             let e = this.elements[i]
             e.update()
         }
         for (let i = 0; i < this.enemies.length; i++) {
             let e = this.enemies[i]
+            e.update()
+        }
+        for (let i = 0; i < this.enemiesBullet.length; i++) {
+            let e = this.enemiesBullet[i]
             e.update()
         }
     }

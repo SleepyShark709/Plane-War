@@ -7,6 +7,7 @@ const __main = () => {
     })
     var images = {
         bullet: 'image/bullet.png',
+        bullet2: 'image/bullet2.png',
         cloud: 'image/cloud.png',
         player: 'image/player.png',
         sky: 'image/sky.png',

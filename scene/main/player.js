@@ -12,6 +12,15 @@ class Player extends GameImage {
         if (this.cooldown > 0) {
             this.cooldown--
         }
+        // 下面这个是判断玩家和敌人子弹碰撞的函数
+        for (let i = 0; i < this.scene.enemiesBullet.length; i++) {
+            let e = this.scene.enemiesBullet[i]
+            if (reactIntersects(this, e) || reactIntersects(e ,this)) {
+                // 玩家与敌人碰撞后进入结束画面
+                var s = new SceneEnd(this.game)
+                this.game.replaceScene(s)
+            }
+        }
     }
     fire() {
         if (this.cooldown === 0) {
@@ -21,6 +30,7 @@ class Player extends GameImage {
             var y = this.y
             b.x = x
             b.y = y
+            console.log('this.scene player', this.scene)
             this.scene.addElement(b)
         }
     }
